@@ -1,7 +1,7 @@
 export const site = {
   name: "Small Business Calculator Toolkit",
   shortName: "Business Math Toolkit",
-  url: "https://small-business.vercel.app",
+  url: "https://small-business-toolkit.vercel.app",
   description:
     "Business calculators for margin, markup, break-even, profit, CPM, and NPV with fast results and plain-English explanations.",
   disclaimer:
