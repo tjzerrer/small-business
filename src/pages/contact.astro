@@ -4,7 +4,6 @@ import { site } from "@/data/site";
 import CalculatorLayout from "@/layouts/CalculatorLayout.astro";
 
 const pageUrl = `${site.url}/contact/`;
-const sent = Astro.url.searchParams.get("sent") === "1";
 const webPageSchema = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
@@ -33,52 +32,48 @@ const webPageSchema = {
   <section class="detail-grid">
     <article class="detail-card">
       <h2>Send a message</h2>
-      {sent ? (
-        <p class="disclaimer">Thanks. Your message was sent successfully.</p>
-      ) : (
-        <form
-          class="contact-form"
-          action={site.contactFormAction}
-          method="POST"
-        >
-          <input type="hidden" name="_subject" value="Small Business Toolkit contact form" />
-          <input type="hidden" name="_next" value={`${site.url}/contact/?sent=1`} />
-          <input type="hidden" name="_captcha" value="false" />
-          <input type="text" name="_honey" class="contact-form__honeypot" tabindex="-1" autocomplete="off" />
+      <form
+        class="contact-form"
+        action={site.contactFormAction}
+        method="POST"
+      >
+        <input type="hidden" name="_subject" value="Small Business Toolkit contact form" />
+        <input type="hidden" name="_next" value={`${site.url}/contact/thanks/`} />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="text" name="_honey" class="contact-form__honeypot" tabindex="-1" autocomplete="off" />
 
-          <div class="field-wrap">
-            <label class="field" for="contact-name"><span>Name</span></label>
-            <div class="input-shell input-shell--medium">
-              <input class="input input--medium" id="contact-name" name="name" type="text" required />
-            </div>
+        <div class="field-wrap">
+          <label class="field" for="contact-name"><span>Name</span></label>
+          <div class="input-shell input-shell--medium">
+            <input class="input input--medium" id="contact-name" name="name" type="text" required />
           </div>
+        </div>
 
-          <div class="field-wrap">
-            <label class="field" for="contact-email"><span>Email</span></label>
-            <div class="input-shell input-shell--medium">
-              <input class="input input--medium" id="contact-email" name="email" type="email" required />
-            </div>
+        <div class="field-wrap">
+          <label class="field" for="contact-email"><span>Email</span></label>
+          <div class="input-shell input-shell--medium">
+            <input class="input input--medium" id="contact-email" name="email" type="email" required />
           </div>
+        </div>
 
-          <div class="field-wrap">
-            <label class="field" for="contact-subject"><span>Subject</span></label>
-            <div class="input-shell input-shell--medium">
-              <input class="input input--medium" id="contact-subject" name="subject" type="text" required />
-            </div>
+        <div class="field-wrap">
+          <label class="field" for="contact-subject"><span>Subject</span></label>
+          <div class="input-shell input-shell--medium">
+            <input class="input input--medium" id="contact-subject" name="subject" type="text" required />
           </div>
+        </div>
 
-          <div class="field-wrap">
-            <label class="field" for="contact-message"><span>Message</span></label>
-            <div class="textarea-shell">
-              <textarea class="textarea-input" id="contact-message" name="message" rows="7" required></textarea>
-            </div>
+        <div class="field-wrap">
+          <label class="field" for="contact-message"><span>Message</span></label>
+          <div class="textarea-shell">
+            <textarea class="textarea-input" id="contact-message" name="message" rows="7" required></textarea>
           </div>
+        </div>
 
-          <div class="form-actions">
-            <button type="submit" class="primary-button">Send message</button>
-          </div>
-        </form>
-      )}
+        <div class="form-actions">
+          <button type="submit" class="primary-button">Send message</button>
+        </div>
+      </form>
     </article>
 
     <article class="detail-card">
