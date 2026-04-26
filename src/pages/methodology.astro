@@ -1,0 +1,50 @@
+---
+import JsonLd from "@/components/JsonLd.astro";
+import { site } from "@/data/site";
+import CalculatorLayout from "@/layouts/CalculatorLayout.astro";
+
+const pageUrl = `${site.url}/methodology/`;
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Methodology",
+  url: pageUrl,
+  description: "How this toolkit approaches formulas, rounding, assumptions, and business-math explanations.",
+  isPartOf: { "@type": "WebSite", name: site.name, url: site.url }
+};
+---
+
+<CalculatorLayout
+  title="Methodology | Small Business Calculator Toolkit"
+  description="How this toolkit approaches formulas, rounding, assumptions, and business-math explanations."
+>
+  <Fragment slot="head">
+    <JsonLd data={webPageSchema} />
+  </Fragment>
+  <section class="hero-card">
+    <p class="eyebrow">Methodology</p>
+    <h1>Transparent formulas, practical explanations.</h1>
+    <p class="hero-copy">
+      These calculators are designed to keep the math visible, make assumptions easy to check, and give a result that is useful for planning rather than just filling a box.
+    </p>
+  </section>
+
+  <section class="detail-grid">
+    <article class="detail-card">
+      <h2>How we approach the math</h2>
+      <ul>
+        <li>Use common business formulas that can be verified by hand.</li>
+        <li>Round percentages to 2 decimal places and money to 2 decimal places.</li>
+        <li>Use plain English to explain what each result means.</li>
+      </ul>
+    </article>
+    <article class="detail-card">
+      <h2>What these tools do not do</h2>
+      <ul>
+        <li>They do not replace accounting, tax, or financial advice.</li>
+        <li>They do not make legal, pricing, or investment decisions for you.</li>
+        <li>They do not predict outcomes beyond the numbers you enter.</li>
+      </ul>
+    </article>
+  </section>
+</CalculatorLayout>

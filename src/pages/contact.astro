@@ -1,0 +1,40 @@
+---
+import JsonLd from "@/components/JsonLd.astro";
+import { site } from "@/data/site";
+import CalculatorLayout from "@/layouts/CalculatorLayout.astro";
+
+const pageUrl = `${site.url}/contact/`;
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  name: "Contact",
+  url: pageUrl,
+  description: "Where to send calculator feedback and suggestions for the Small Business Calculator Toolkit.",
+  isPartOf: { "@type": "WebSite", name: site.name, url: site.url }
+};
+---
+
+<CalculatorLayout
+  title="Contact | Small Business Calculator Toolkit"
+  description="Where to send calculator feedback and suggestions for the Small Business Calculator Toolkit."
+>
+  <Fragment slot="head">
+    <JsonLd data={webPageSchema} />
+  </Fragment>
+  <section class="hero-card">
+    <p class="eyebrow">Contact</p>
+    <h1>Questions, suggestions, or calculator requests.</h1>
+    <p class="hero-copy">
+      This first version keeps contact simple. Use the project issue tracker to share bugs, calculator requests, or feedback on how the tools could be clearer.
+    </p>
+  </section>
+
+  <section class="detail-card">
+    <h2>Best way to reach out</h2>
+    <p>
+      <a class="text-link" href={site.contactHref} target="_blank" rel="noreferrer">Open the GitHub issues page</a>
+      {" "}to report a bug, suggest a new calculator, or flag a confusing result.
+    </p>
+    <p class="disclaimer">{site.disclaimer}</p>
+  </section>
+</CalculatorLayout>

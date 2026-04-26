@@ -1,0 +1,25 @@
+---
+interface Props {
+  relatedTitle: string;
+}
+
+const { relatedTitle } = Astro.props;
+---
+
+<aside class="result-card" data-result-card>
+  <div class="result-card__header">
+    <p class="result-label">Result</p>
+  </div>
+  <p class="result-empty">Enter your numbers and click Calculate to see the result.</p>
+  <div class="result-content" data-result-content hidden>
+    <p class="result-sentence" data-result-sentence></p>
+    <dl class="result-breakdown" data-result-breakdown></dl>
+    <div class="interpretation-block">
+      <p class="interpretation-label">{relatedTitle}</p>
+      <p class="summary-note" data-summary-note></p>
+    </div>
+    <button type="button" class="secondary-button result-print" data-print-summary hidden>
+      Print or Save as PDF
+    </button>
+  </div>
+</aside>

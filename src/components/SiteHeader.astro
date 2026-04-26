@@ -1,0 +1,22 @@
+---
+import { orderedTools } from "@/data/tools";
+import { site } from "@/data/site";
+---
+
+<header class="site-header">
+  <a class="brand" href="/">
+    <span class="brand-mark">SB</span>
+    <span>
+      <strong>{site.shortName}</strong>
+      <small>Fast math for small business decisions</small>
+    </span>
+  </a>
+
+  <nav class="top-nav" aria-label="Primary">
+    {orderedTools.slice(0, 6).map((tool) => (
+      <a href={`/${tool.slug}/`}>{tool.navLabel}</a>
+    ))}
+    <a href="/methodology/">Methodology</a>
+    <a href="/contact/">Contact</a>
+  </nav>
+</header>

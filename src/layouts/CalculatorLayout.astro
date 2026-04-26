@@ -1,0 +1,22 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import SiteHeader from "@/components/SiteHeader.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  pageType?: "website" | "article";
+}
+
+const { title, description, pageType = "website" } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} pageType={pageType}>
+  <slot name="head" slot="head" />
+  <div class="page-shell">
+    <SiteHeader />
+    <main class="page-main">
+      <slot />
+    </main>
+  </div>
+</BaseLayout>

@@ -1,0 +1,15 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  priority?: boolean;
+}
+
+const { href, title, description, priority = false } = Astro.props;
+---
+
+<a class:list={["tool-card", priority && "tool-card--priority"]} href={href}>
+  <strong>{title}</strong>
+  <span>{description}</span>
+</a>

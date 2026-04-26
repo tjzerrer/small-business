@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Small Business Calculator Toolkit</title>
+  <desc id="desc">Margin, markup, break-even, profit, CPM, and NPV calculators for small-business math.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#17324d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="32" fill="url(#bg)"/>
+  <rect x="72" y="72" width="160" height="160" rx="28" fill="#ffffff" opacity="0.1"/>
+  <rect x="96" y="96" width="112" height="112" rx="24" fill="#ffffff"/>
+  <path d="M122 178V126h25c18 0 27 8 27 21 0 18-13 31-31 31Zm24-17c6 0 10-3 10-8 0-6-4-9-10-9h-6v17Z" fill="#17324d"/>
+  <path d="M180 178V116h14v62Zm-5-31 18-18 9 9-18 18Z" fill="#10b981"/>
+  <text x="72" y="314" fill="#93c5fd" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" letter-spacing="1">SMALL BUSINESS TOOLKIT</text>
+  <text x="72" y="404" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700">Business math that is</text>
+  <text x="72" y="486" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700">fast, clear, and practical.</text>
+  <text x="72" y="562" fill="#cbd5e1" font-family="Arial, Helvetica, sans-serif" font-size="30">Margin • Markup • Break-Even • Profit • CPM • NPV</text>
+</svg>

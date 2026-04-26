@@ -1,0 +1,22 @@
+---
+import { tools } from "@/data/tools";
+import type { ToolSlug } from "@/lib/types";
+
+interface Props {
+  relatedTools: ToolSlug[];
+}
+
+const { relatedTools } = Astro.props;
+---
+
+<section class="detail-card">
+  <h2>Related Calculators</h2>
+  <div class="related-grid">
+    {relatedTools.map((slug) => (
+      <a class="related-link" href={`/${slug}/`}>
+        <strong>{tools[slug].name}</strong>
+        <span>{tools[slug].intro}</span>
+      </a>
+    ))}
+  </div>
+</section>

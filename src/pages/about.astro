@@ -1,0 +1,42 @@
+---
+import JsonLd from "@/components/JsonLd.astro";
+import { site } from "@/data/site";
+import CalculatorLayout from "@/layouts/CalculatorLayout.astro";
+
+const pageUrl = `${site.url}/about/`;
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "About",
+  url: pageUrl,
+  description: "Why this small-business calculator toolkit exists and how the tools are designed.",
+  isPartOf: { "@type": "WebSite", name: site.name, url: site.url }
+};
+---
+
+<CalculatorLayout
+  title="About | Small Business Calculator Toolkit"
+  description="Why this small-business calculator toolkit exists and how the tools are designed."
+>
+  <Fragment slot="head">
+    <JsonLd data={webPageSchema} />
+  </Fragment>
+  <section class="hero-card">
+    <p class="eyebrow">About</p>
+    <h1>Focused tools for everyday business math.</h1>
+    <p class="hero-copy">
+      This toolkit is built for practical decisions: pricing work, checking margins, planning break-even targets, and reviewing whether a campaign or investment makes financial sense.
+    </p>
+  </section>
+
+  <section class="detail-grid">
+    <article class="detail-card">
+      <h2>Who it is for</h2>
+      <p>Freelancers, ecommerce sellers, creators, small-business owners, agencies, and students who need fast math without opening a spreadsheet.</p>
+    </article>
+    <article class="detail-card">
+      <h2>How the site is built</h2>
+      <p>Each page is static-first, quick to load, and written to be useful even before you type anything into the calculator.</p>
+    </article>
+  </section>
+</CalculatorLayout>

@@ -1,0 +1,86 @@
+---
+import JsonLd from "@/components/JsonLd.astro";
+import ToolCard from "@/components/ToolCard.astro";
+import { site } from "@/data/site";
+import { orderedTools } from "@/data/tools";
+import CalculatorLayout from "@/layouts/CalculatorLayout.astro";
+
+const webSiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: site.name,
+  url: site.url,
+  description: site.description
+};
+
+const collectionPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: site.name,
+  url: site.url,
+  description: site.description
+};
+---
+
+<CalculatorLayout
+  title="Small Business Calculator Toolkit | Business Math Tools"
+  description={site.description}
+>
+  <Fragment slot="head">
+    <JsonLd data={webSiteSchema} />
+    <JsonLd data={collectionPageSchema} />
+  </Fragment>
+
+  <section class="hero-card homepage-hero">
+    <div>
+      <p class="eyebrow">Small-business unit economics toolkit</p>
+      <h1>Business math for pricing, margins, and break-even decisions.</h1>
+      <p class="hero-copy">
+        Fast calculators for margin, markup, break-even, profit, CPM, and NPV.
+      </p>
+    </div>
+
+    <div class="common-tasks-card">
+      <div class="section-heading compact-heading">
+        <h2>Priority calculators</h2>
+      </div>
+      <div class="task-grid">
+        {orderedTools.slice(0, 4).map((tool) => (
+          <ToolCard href={`/${tool.slug}/`} title={tool.name} description={tool.intro} priority />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="detail-card">
+    <div class="section-heading">
+      <div>
+        <p class="section-eyebrow">Main toolkit</p>
+        <h2>Choose the calculator that matches the question in front of you</h2>
+      </div>
+    </div>
+    <div class="tool-grid">
+      {orderedTools.map((tool) => (
+        <ToolCard href={`/${tool.slug}/`} title={tool.name} description={tool.metaDescription} />
+      ))}
+    </div>
+  </section>
+
+  <section class="detail-grid">
+    <article class="detail-card">
+      <h2>Which calculator should I use?</h2>
+      <ul>
+        <li><strong>Margin Calculator:</strong> Use this when you know selling price and cost and want profit margin plus markup.</li>
+        <li><strong>Markup Calculator:</strong> Use this when you start from cost and want to price with a markup target.</li>
+        <li><strong>Break-Even Calculator:</strong> Use this when you want to know how many units or dollars in sales it takes to cover fixed costs.</li>
+        <li><strong>Profit Calculator:</strong> Use this when you want gross profit, net profit, and margin percentages in one place.</li>
+        <li><strong>CPM Calculator:</strong> Use this when you are comparing ad spend to impression volume.</li>
+        <li><strong>NPV Calculator:</strong> Use this when you want a simple estimate of whether future cash flows justify an upfront investment.</li>
+      </ul>
+    </article>
+
+    <article class="detail-card">
+      <p class="disclaimer">{site.disclaimer}</p>
+    </article>
+  </section>
+</CalculatorLayout>

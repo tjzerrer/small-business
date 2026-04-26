@@ -1,0 +1,21 @@
+---
+import type { FormulaLine } from "@/lib/types";
+
+interface Props {
+  formulas: FormulaLine[];
+}
+
+const { formulas } = Astro.props;
+---
+
+<article class="detail-card">
+  <h2>Formula</h2>
+  <div class="formula-list">
+    {formulas.map((formula) => (
+      <div class="formula-line">
+        <strong>{formula.label}</strong>
+        <code>{formula.expression}</code>
+      </div>
+    ))}
+  </div>
+</article>
