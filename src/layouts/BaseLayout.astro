@@ -1,6 +1,7 @@
 ---
 import "@/styles/global.css";
 import Analytics from "@vercel/analytics/astro";
+import SpeedInsights from "@vercel/speed-insights/astro";
 import { site } from "@/data/site";
 
 interface Props {
@@ -51,5 +52,6 @@ const socialImageUrl = new URL(socialImage, siteUrl).toString();
   <body>
     <slot />
     <Analytics />
+    <SpeedInsights />
   </body>
 </html>
