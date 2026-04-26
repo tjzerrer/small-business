@@ -4,7 +4,13 @@ export type ToolSlug =
   | "break-even-calculator"
   | "profit-calculator"
   | "cpm-calculator"
-  | "npv-calculator";
+  | "npv-calculator"
+  | "roi-calculator"
+  | "pricing-calculator"
+  | "contribution-margin-calculator"
+  | "customer-acquisition-cost-calculator"
+  | "lifetime-value-calculator"
+  | "discount-calculator";
 
 export type ToolField =
   | {
@@ -13,6 +19,7 @@ export type ToolField =
       type: "currency" | "number";
       placeholder?: string;
       min?: number;
+      max?: number;
       step?: number;
       required?: boolean;
       width?: "short" | "medium";

@@ -26,7 +26,7 @@ const webPageSchema = {
     <p class="eyebrow">Contact</p>
     <h1>Questions, suggestions, or calculator requests.</h1>
     <p class="hero-copy">
-      Send a message directly from the form below, or use GitHub issues if you are reporting a bug or suggesting a new tool.
+      Send a message directly from the form below.
     </p>
   </section>
 
@@ -34,7 +34,7 @@ const webPageSchema = {
     <article class="detail-card">
       <h2>Send a message</h2>
       {sent ? (
-        <p class="disclaimer">Thanks — your message was sent. I will see it at {site.contactEmail}.</p>
+        <p class="disclaimer">Thanks. Your message was sent successfully.</p>
       ) : (
         <form
           class="contact-form"

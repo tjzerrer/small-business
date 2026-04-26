@@ -2,7 +2,7 @@
 import JsonLd from "@/components/JsonLd.astro";
 import ToolCard from "@/components/ToolCard.astro";
 import { site } from "@/data/site";
-import { orderedTools } from "@/data/tools";
+import { homepageCategories, priorityTools, tools } from "@/data/tools";
 import CalculatorLayout from "@/layouts/CalculatorLayout.astro";
 
 const webSiteSchema = {
@@ -34,9 +34,9 @@ const collectionPageSchema = {
   <section class="hero-card homepage-hero">
     <div>
       <p class="eyebrow">Small-business unit economics toolkit</p>
-      <h1>Business math for pricing, margins, and break-even decisions.</h1>
+      <h1>Business math for pricing, margins, growth, and break-even decisions.</h1>
       <p class="hero-copy">
-        Fast calculators for margin, markup, break-even, profit, CPM, and NPV.
+        Fast calculators for pricing, profit, CAC, LTV, ROI, CPM, and NPV.
       </p>
     </div>
 
@@ -45,42 +45,48 @@ const collectionPageSchema = {
         <h2>Priority calculators</h2>
       </div>
       <div class="task-grid">
-        {orderedTools.slice(0, 4).map((tool) => (
+        {priorityTools.map((tool) => (
           <ToolCard href={`/${tool.slug}/`} title={tool.name} description={tool.intro} priority />
         ))}
       </div>
     </div>
   </section>
 
-  <section class="detail-card">
-    <div class="section-heading">
-      <div>
-        <p class="section-eyebrow">Main toolkit</p>
-        <h2>Choose the calculator that matches the question in front of you</h2>
-      </div>
-    </div>
-    <div class="tool-grid">
-      {orderedTools.map((tool) => (
-        <ToolCard href={`/${tool.slug}/`} title={tool.name} description={tool.metaDescription} />
-      ))}
-    </div>
+  <section class="detail-grid category-grid">
+    {homepageCategories.map((category) => (
+      <article class="detail-card" id={category.id}>
+        <div class="section-heading">
+          <div>
+            <p class="section-eyebrow">Calculator category</p>
+            <h2>{category.title}</h2>
+          </div>
+        </div>
+        <p>{category.description}</p>
+        <div class="tool-grid">
+          {category.tools.map((slug) => (
+            <ToolCard href={`/${slug}/`} title={tools[slug].name} description={tools[slug].intro} />
+          ))}
+        </div>
+      </article>
+    ))}
   </section>
 
-  <section class="detail-grid">
-    <article class="detail-card">
-      <h2>Which calculator should I use?</h2>
-      <ul>
-        <li><strong>Margin Calculator:</strong> Use this when you know selling price and cost and want profit margin plus markup.</li>
-        <li><strong>Markup Calculator:</strong> Use this when you start from cost and want to price with a markup target.</li>
-        <li><strong>Break-Even Calculator:</strong> Use this when you want to know how many units or dollars in sales it takes to cover fixed costs.</li>
-        <li><strong>Profit Calculator:</strong> Use this when you want gross profit, net profit, and margin percentages in one place.</li>
-        <li><strong>CPM Calculator:</strong> Use this when you are comparing ad spend to impression volume.</li>
-        <li><strong>NPV Calculator:</strong> Use this when you want a simple estimate of whether future cash flows justify an upfront investment.</li>
-      </ul>
-    </article>
+  <section class="detail-card">
+    <h2>Which calculator should I use?</h2>
+    <ul>
+      <li><strong>Margin Calculator:</strong> Use this when you know revenue and cost and want profit percentage plus markup.</li>
+      <li><strong>Markup Calculator:</strong> Use this when you know cost and markup.</li>
+      <li><strong>Pricing Calculator:</strong> Use this when you want to set a selling price from cost and a target percentage.</li>
+      <li><strong>Break-Even Calculator:</strong> Use this when you want to know how many units you need to sell.</li>
+      <li><strong>Contribution Margin Calculator:</strong> Use this when you want to understand profit contribution per unit.</li>
+      <li><strong>Profit Calculator:</strong> Use this when you want gross profit, net profit, and margins in one place.</li>
+      <li><strong>ROI Calculator:</strong> Use this when you want to compare investment return against investment cost.</li>
+      <li><strong>Customer Acquisition Cost Calculator:</strong> Use this when you want to know how much it costs to get a customer.</li>
+      <li><strong>Lifetime Value Calculator:</strong> Use this when you want to estimate customer value over time.</li>
+    </ul>
+  </section>
 
-    <article class="detail-card">
-      <p class="disclaimer">{site.disclaimer}</p>
-    </article>
+  <section class="detail-card">
+    <p class="disclaimer">{site.disclaimer}</p>
   </section>
 </CalculatorLayout>

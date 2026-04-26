@@ -1,12 +1,17 @@
 import {
   calculateBreakEven,
+  calculateContributionMargin,
   calculateCpm,
+  calculateCustomerAcquisitionCost,
+  calculateDiscount,
+  calculateLifetimeValue,
   calculateMargin,
   calculateMarkup,
   calculateNpv,
-  calculateProfit
+  calculatePricing,
+  calculateProfit,
+  calculateRoi
 } from "@/lib/calculators";
-import { formatCurrency } from "@/lib/format";
 import type { CalculationResult } from "@/lib/types";
 
 const getInput = (form: HTMLFormElement, name: string) => {
@@ -17,21 +22,19 @@ const getInput = (form: HTMLFormElement, name: string) => {
 const getNumber = (formData: FormData, name: string) => {
   const raw = formData.get(name);
   if (raw === null || raw === "") {
-    return NaN;
+    return Number.NaN;
   }
   return Number(raw);
 };
 
-const setFieldError = (
-  form: HTMLFormElement,
-  name: string,
-  message: string
-) => {
+const setFieldError = (form: HTMLFormElement, name: string, message: string) => {
   const field = getInput(form, name);
   const error = form.querySelector<HTMLElement>(`[data-field-error="${name}"]`);
+
   if (field) {
     field.setAttribute("aria-invalid", "true");
   }
+
   if (error) {
     error.textContent = message;
     error.hidden = false;
@@ -43,6 +46,7 @@ const clearErrors = (form: HTMLFormElement) => {
     node.hidden = true;
     node.textContent = "";
   });
+
   form.querySelectorAll<HTMLInputElement | HTMLSelectElement>("[aria-invalid='true']").forEach((node) => {
     node.removeAttribute("aria-invalid");
   });
@@ -57,16 +61,20 @@ const validateRequired = (form: HTMLFormElement, name: string, message: string) 
   return true;
 };
 
+const stopForMissingFields = (checks: boolean[]) => {
+  if (checks.includes(false)) {
+    throw new Error("Please complete the required fields.");
+  }
+};
+
 const calculators: Record<string, (form: HTMLFormElement, formData: FormData) => CalculationResult> = {
   "margin-calculator": (form, formData) => {
-    const okayRevenue = validateRequired(form, "revenue", "Please enter a selling price.");
-    const okayCost = validateRequired(form, "cost", "Please enter your cost.");
+    const revenueOkay = validateRequired(form, "revenue", "Please enter your revenue.");
+    const costOkay = validateRequired(form, "cost", "Please enter your cost.");
+    stopForMissingFields([revenueOkay, costOkay]);
+
     const revenue = getNumber(formData, "revenue");
     const cost = getNumber(formData, "cost");
-
-    if (!okayRevenue || !okayCost) {
-      throw new Error("Please complete the required fields.");
-    }
 
     if (revenue === 0) {
       setFieldError(form, "revenue", "Please enter a selling price greater than zero.");
@@ -76,38 +84,32 @@ const calculators: Record<string, (form: HTMLFormElement, formData: FormData) =>
     return calculateMargin(revenue, cost);
   },
   "markup-calculator": (form, formData) => {
-    const okayCost = validateRequired(form, "cost", "Please enter your cost.");
-    const okayMarkup = validateRequired(form, "markupPercent", "Please enter a markup percentage.");
-    if (!okayCost || !okayMarkup) {
-      throw new Error("Please complete the required fields.");
-    }
+    const costOkay = validateRequired(form, "cost", "Please enter your cost.");
+    const markupOkay = validateRequired(form, "markupPercent", "Please enter a markup percentage.");
+    stopForMissingFields([costOkay, markupOkay]);
 
     return calculateMarkup(getNumber(formData, "cost"), getNumber(formData, "markupPercent"));
   },
   "break-even-calculator": (form, formData) => {
-    const checks = [
-      validateRequired(form, "fixedCosts", "Please enter fixed costs."),
-      validateRequired(form, "pricePerUnit", "Please enter a price per unit."),
-      validateRequired(form, "variableCostPerUnit", "Please enter a variable cost per unit.")
-    ];
-    if (checks.includes(false)) {
-      throw new Error("Please complete the required fields.");
-    }
+    const fixedCostsOkay = validateRequired(form, "fixedCosts", "Please enter fixed costs.");
+    const priceOkay = validateRequired(form, "pricePerUnit", "Please enter a price per unit.");
+    const variableOkay = validateRequired(
+      form,
+      "variableCostPerUnit",
+      "Please enter a variable cost per unit."
+    );
+    stopForMissingFields([fixedCostsOkay, priceOkay, variableOkay]);
 
     const fixedCosts = getNumber(formData, "fixedCosts");
     const pricePerUnit = getNumber(formData, "pricePerUnit");
     const variableCostPerUnit = getNumber(formData, "variableCostPerUnit");
 
     if (pricePerUnit <= variableCostPerUnit) {
-      setFieldError(
-        form,
-        "pricePerUnit",
-        "Price per unit must be greater than variable cost per unit."
-      );
+      setFieldError(form, "pricePerUnit", "Price per unit must be greater than variable cost per unit.");
       setFieldError(
         form,
         "variableCostPerUnit",
-        "Break-even is impossible when each unit does not contribute profit."
+        "Break-even cannot be reached when each unit adds no positive contribution."
       );
       throw new Error(
         "Break-even cannot be reached because price per unit is less than or equal to variable cost per unit."
@@ -117,14 +119,10 @@ const calculators: Record<string, (form: HTMLFormElement, formData: FormData) =>
     return calculateBreakEven(fixedCosts, pricePerUnit, variableCostPerUnit);
   },
   "profit-calculator": (form, formData) => {
-    const checks = [
-      validateRequired(form, "revenue", "Please enter revenue."),
-      validateRequired(form, "cogs", "Please enter cost of goods sold."),
-      validateRequired(form, "operatingExpenses", "Please enter operating expenses.")
-    ];
-    if (checks.includes(false)) {
-      throw new Error("Please complete the required fields.");
-    }
+    const revenueOkay = validateRequired(form, "revenue", "Please enter your revenue.");
+    const cogsOkay = validateRequired(form, "cogs", "Please enter cost of goods sold.");
+    const operatingOkay = validateRequired(form, "operatingExpenses", "Please enter operating expenses.");
+    stopForMissingFields([revenueOkay, cogsOkay, operatingOkay]);
 
     return calculateProfit(
       getNumber(formData, "revenue"),
@@ -134,13 +132,9 @@ const calculators: Record<string, (form: HTMLFormElement, formData: FormData) =>
     );
   },
   "cpm-calculator": (form, formData) => {
-    const checks = [
-      validateRequired(form, "adCost", "Please enter ad cost."),
-      validateRequired(form, "impressions", "Please enter impressions.")
-    ];
-    if (checks.includes(false)) {
-      throw new Error("Please complete the required fields.");
-    }
+    const adCostOkay = validateRequired(form, "adCost", "Please enter ad cost.");
+    const impressionsOkay = validateRequired(form, "impressions", "Please enter impressions.");
+    stopForMissingFields([adCostOkay, impressionsOkay]);
 
     const impressions = getNumber(formData, "impressions");
     if (impressions === 0) {
@@ -151,10 +145,8 @@ const calculators: Record<string, (form: HTMLFormElement, formData: FormData) =>
     return calculateCpm(getNumber(formData, "adCost"), impressions);
   },
   "npv-calculator": (form, formData) => {
-    const checks = [
-      validateRequired(form, "initialInvestment", "Please enter the initial investment."),
-      validateRequired(form, "discountRate", "Please enter the discount rate.")
-    ];
+    const initialOkay = validateRequired(form, "initialInvestment", "Please enter the initial investment.");
+    const discountOkay = validateRequired(form, "discountRate", "Please enter the discount rate.");
     const cashFlows = ["cashFlow1", "cashFlow2", "cashFlow3", "cashFlow4", "cashFlow5"].map((name) =>
       getNumber(formData, name)
     );
@@ -162,18 +154,136 @@ const calculators: Record<string, (form: HTMLFormElement, formData: FormData) =>
 
     if (!hasAtLeastOneCashFlow) {
       setFieldError(form, "cashFlow1", "Please enter at least one yearly cash flow.");
-      throw new Error("Please enter at least one yearly cash flow.");
     }
 
-    if (checks.includes(false)) {
-      throw new Error("Please complete the required fields.");
-    }
+    stopForMissingFields([initialOkay, discountOkay, hasAtLeastOneCashFlow]);
 
     return calculateNpv(
       getNumber(formData, "initialInvestment"),
       getNumber(formData, "discountRate"),
       cashFlows.map((value) => (Number.isFinite(value) ? value : 0))
     );
+  },
+  "roi-calculator": (form, formData) => {
+    const gainOkay = validateRequired(form, "gainFromInvestment", "Please enter gain from investment.");
+    const costOkay = validateRequired(form, "costOfInvestment", "Please enter cost of investment.");
+    stopForMissingFields([gainOkay, costOkay]);
+
+    const costOfInvestment = getNumber(formData, "costOfInvestment");
+    if (costOfInvestment === 0) {
+      setFieldError(form, "costOfInvestment", "Please enter a cost greater than zero.");
+      throw new Error("ROI cannot be calculated when cost of investment is zero.");
+    }
+
+    return calculateRoi(getNumber(formData, "gainFromInvestment"), costOfInvestment);
+  },
+  "pricing-calculator": (form, formData) => {
+    const costOkay = validateRequired(form, "cost", "Please enter your cost.");
+    const percentOkay = validateRequired(form, "targetPercent", "Please enter your target percentage.");
+    stopForMissingFields([costOkay, percentOkay]);
+
+    const pricingMode = (formData.get("pricingMode")?.toString() ?? "markup") as "markup" | "margin";
+    const targetPercent = getNumber(formData, "targetPercent");
+
+    if (pricingMode === "margin" && targetPercent >= 100) {
+      setFieldError(form, "targetPercent", "Target margin must stay below 100%.");
+      throw new Error("Target margin must be less than 100%.");
+    }
+
+    return calculatePricing(getNumber(formData, "cost"), targetPercent, pricingMode);
+  },
+  "contribution-margin-calculator": (form, formData) => {
+    const priceOkay = validateRequired(form, "sellingPricePerUnit", "Please enter your selling price per unit.");
+    const variableOkay = validateRequired(
+      form,
+      "variableCostPerUnit",
+      "Please enter your variable cost per unit."
+    );
+    stopForMissingFields([priceOkay, variableOkay]);
+
+    const sellingPricePerUnit = getNumber(formData, "sellingPricePerUnit");
+    const variableCostPerUnit = getNumber(formData, "variableCostPerUnit");
+    const fixedCosts = getNumber(formData, "fixedCosts");
+
+    if (sellingPricePerUnit === 0) {
+      setFieldError(form, "sellingPricePerUnit", "Please enter a selling price greater than zero.");
+      throw new Error("Contribution margin ratio cannot be calculated from zero selling price.");
+    }
+
+    if (sellingPricePerUnit <= variableCostPerUnit) {
+      setFieldError(
+        form,
+        "sellingPricePerUnit",
+        "Selling price must be greater than variable cost to create contribution margin."
+      );
+      setFieldError(
+        form,
+        "variableCostPerUnit",
+        "Each sale needs positive contribution after variable cost."
+      );
+      throw new Error("Each sale does not contribute positive margin after variable cost.");
+    }
+
+    return calculateContributionMargin(
+      sellingPricePerUnit,
+      variableCostPerUnit,
+      Number.isNaN(fixedCosts) ? undefined : fixedCosts
+    );
+  },
+  "customer-acquisition-cost-calculator": (form, formData) => {
+    const spendOkay = validateRequired(form, "marketingSpend", "Please enter your marketing or sales spend.");
+    const customersOkay = validateRequired(form, "newCustomers", "Please enter new customers acquired.");
+    stopForMissingFields([spendOkay, customersOkay]);
+
+    const newCustomers = getNumber(formData, "newCustomers");
+    if (newCustomers === 0) {
+      setFieldError(form, "newCustomers", "Please enter new customers greater than zero.");
+      throw new Error("Customer acquisition cost cannot be calculated with zero new customers.");
+    }
+
+    return calculateCustomerAcquisitionCost(getNumber(formData, "marketingSpend"), newCustomers);
+  },
+  "lifetime-value-calculator": (form, formData) => {
+    const revenueOkay = validateRequired(
+      form,
+      "averageRevenuePerCustomer",
+      "Please enter average revenue per customer."
+    );
+    const marginOkay = validateRequired(form, "grossMarginPercent", "Please enter gross margin percentage.");
+    const lifespanOkay = validateRequired(form, "customerLifespanMonths", "Please enter customer lifespan.");
+    stopForMissingFields([revenueOkay, marginOkay, lifespanOkay]);
+
+    const grossMarginPercent = getNumber(formData, "grossMarginPercent");
+    const customerLifespanMonths = getNumber(formData, "customerLifespanMonths");
+
+    if (grossMarginPercent < 0 || grossMarginPercent > 100) {
+      setFieldError(form, "grossMarginPercent", "Gross margin should stay between 0% and 100%.");
+      throw new Error("Gross margin should stay between 0% and 100%.");
+    }
+
+    if (customerLifespanMonths <= 0) {
+      setFieldError(form, "customerLifespanMonths", "Please enter a lifespan greater than zero.");
+      throw new Error("Customer lifespan must be greater than zero.");
+    }
+
+    return calculateLifetimeValue(
+      getNumber(formData, "averageRevenuePerCustomer"),
+      grossMarginPercent,
+      customerLifespanMonths
+    );
+  },
+  "discount-calculator": (form, formData) => {
+    const priceOkay = validateRequired(form, "originalPrice", "Please enter the original price.");
+    const discountOkay = validateRequired(form, "discountPercent", "Please enter the discount percentage.");
+    stopForMissingFields([priceOkay, discountOkay]);
+
+    const discountPercent = getNumber(formData, "discountPercent");
+    if (discountPercent < 0 || discountPercent > 100) {
+      setFieldError(form, "discountPercent", "Discount percentage should stay between 0% and 100%.");
+      throw new Error("Discount percentage should stay between 0% and 100%.");
+    }
+
+    return calculateDiscount(getNumber(formData, "originalPrice"), discountPercent);
   }
 };
 

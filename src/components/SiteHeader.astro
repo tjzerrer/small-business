@@ -1,6 +1,16 @@
 ---
-import { orderedTools } from "@/data/tools";
+import { homepageCategories } from "@/data/tools";
 import { site } from "@/data/site";
+
+const navSections = homepageCategories.map((category) => ({
+  href: `/#${category.id}`,
+  label:
+    category.id === "pricing-profit"
+      ? "Pricing & Profit"
+      : category.id === "unit-economics"
+        ? "Unit Economics"
+        : "Marketing & Growth"
+}));
 ---
 
 <header class="site-header">
@@ -13,8 +23,8 @@ import { site } from "@/data/site";
   </a>
 
   <nav class="top-nav" aria-label="Primary">
-    {orderedTools.slice(0, 6).map((tool) => (
-      <a href={`/${tool.slug}/`}>{tool.navLabel}</a>
+    {navSections.map((section) => (
+      <a href={section.href}>{section.label}</a>
     ))}
     <a href="/methodology/">Methodology</a>
     <a href="/contact/">Contact</a>

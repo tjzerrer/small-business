@@ -3,9 +3,9 @@ export const site = {
   shortName: "Business Math Toolkit",
   url: "https://small-business-toolkit.vercel.app",
   description:
-    "Business calculators for margin, markup, break-even, profit, CPM, and NPV with fast results and plain-English explanations.",
+    "Business calculators for pricing, profit, unit economics, CAC, LTV, CPM, ROI, and NPV with fast results and plain-English explanations.",
   disclaimer:
-    "This calculator is for educational and planning purposes only. It does not replace professional financial, tax, or accounting advice.",
+    "This calculator is for educational and planning purposes only. It does not replace professional financial, tax, accounting, or business advice.",
   lastUpdated: "April 25, 2026",
   contactHref: "https://github.com/tjzerrer/small-business/issues",
   contactEmail: "tonyzerrer@gmail.com",

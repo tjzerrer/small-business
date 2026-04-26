@@ -202,6 +202,14 @@ a {
   color: var(--accent-strong);
 }
 
+.result-card .result-label,
+.result-card .interpretation-label {
+  color: #f8fafc;
+  font-weight: 700;
+  opacity: 0.98;
+  letter-spacing: 0.12em;
+}
+
 h1,
 h2,
 legend,
@@ -264,7 +272,7 @@ h1 {
 }
 
 .task-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .tool-card,
@@ -292,7 +300,7 @@ h1 {
 }
 
 .tool-card--priority span {
-  max-width: 34ch;
+  max-width: 28ch;
 }
 
 .calculator-shell {
@@ -493,6 +501,11 @@ select.input {
   color: #d6e3f2;
 }
 
+.result-card .result-empty,
+.result-card .summary-note {
+  color: #f8fafc;
+}
+
 .result-sentence {
   font-size: 1.18rem;
   line-height: 1.55;
@@ -529,6 +542,10 @@ select.input {
   background: rgba(255, 255, 255, 0.14);
   color: #eff6ff;
   border: 1px solid rgba(255, 255, 255, 0.22);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 }
 
 .result-print:hover {
@@ -539,6 +556,10 @@ select.input {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
+}
+
+.category-grid {
+  align-items: start;
 }
 
 .section-heading {
@@ -590,7 +611,6 @@ select.input {
   font-weight: 700;
 }
 
-.trust-card .last-updated,
 .disclaimer {
   margin-top: 14px;
   padding: 14px 16px;

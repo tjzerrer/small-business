@@ -1,7 +1,7 @@
 import type { CalculationResult } from "@/lib/types";
 import { formatCurrency, formatNumber, formatPercent, roundMoney, roundPercent } from "@/lib/format";
 
-const getPositive = (value: number) => (Number.isFinite(value) ? value : 0);
+const getFiniteOrZero = (value: number) => (Number.isFinite(value) ? value : 0);
 
 export function calculateMargin(revenue: number, cost: number): CalculationResult {
   if (revenue <= 0) {
@@ -100,7 +100,10 @@ export function calculateProfit(
       { label: "Gross margin", value: formatPercent(grossMargin) },
       { label: "Net margin", value: formatPercent(netMargin) }
     ],
-    note: netProfit < 0 ? "Net profit is negative, which means the business is operating at a loss in this scenario." : "Net profit reflects cost of goods sold plus operating and other expenses."
+    note:
+      netProfit < 0
+        ? "Net profit is negative, which means the business is operating at a loss in this scenario."
+        : "Net profit reflects cost of goods sold plus operating and other expenses."
   };
 }
 
@@ -127,7 +130,7 @@ export function calculateNpv(
   discountRate: number,
   cashFlows: number[]
 ): CalculationResult {
-  const validFlows = cashFlows.map(getPositive);
+  const validFlows = cashFlows.map(getFiniteOrZero);
   const presentValues = validFlows.map((flow, index) => flow / (1 + discountRate / 100) ** (index + 1));
   const totalPresentValue = presentValues.reduce((sum, value) => sum + value, 0);
   const npv = roundMoney(totalPresentValue - initialInvestment);
@@ -144,5 +147,175 @@ export function calculateNpv(
       npv >= 0
         ? "A positive NPV suggests the projected cash flows exceed the discount-adjusted cost of the investment."
         : "A negative NPV suggests the projected cash flows do not cover the discount-adjusted cost of the investment."
+  };
+}
+
+export function calculateRoi(gainFromInvestment: number, costOfInvestment: number): CalculationResult {
+  if (costOfInvestment <= 0) {
+    throw new Error("Please enter a cost of investment greater than zero.");
+  }
+
+  const netGain = roundMoney(gainFromInvestment - costOfInvestment);
+  const roiPercent = roundPercent((netGain / costOfInvestment) * 100);
+
+  return {
+    sentence: `With ${formatCurrency(gainFromInvestment)} returned from an investment that cost ${formatCurrency(costOfInvestment)}, net gain is ${formatCurrency(netGain)} and ROI is ${formatPercent(roiPercent)}.`,
+    rows: [
+      { label: "Net gain", value: formatCurrency(netGain) },
+      { label: "ROI", value: formatPercent(roiPercent) }
+    ],
+    note:
+      roiPercent < 0
+        ? "This investment lost money relative to what it cost."
+        : "This investment gained money relative to what it cost."
+  };
+}
+
+export function calculatePricing(
+  cost: number,
+  targetPercent: number,
+  pricingMode: "markup" | "margin"
+): CalculationResult {
+  if (cost < 0) {
+    throw new Error("Please enter a valid cost.");
+  }
+
+  if (pricingMode === "margin" && targetPercent >= 100) {
+    throw new Error("Target margin must be less than 100%.");
+  }
+
+  const sellingPrice =
+    pricingMode === "markup"
+      ? roundMoney(cost * (1 + targetPercent / 100))
+      : roundMoney(cost / (1 - targetPercent / 100));
+
+  const profitPerSale = roundMoney(sellingPrice - cost);
+  const resultingMargin = sellingPrice === 0 ? 0 : roundPercent((profitPerSale / sellingPrice) * 100);
+  const resultingMarkup = cost === 0 ? 0 : roundPercent((profitPerSale / cost) * 100);
+
+  return {
+    sentence:
+      pricingMode === "markup"
+        ? `At a cost of ${formatCurrency(cost)} and a target markup of ${formatPercent(targetPercent)}, the suggested selling price is ${formatCurrency(sellingPrice)}.`
+        : `At a cost of ${formatCurrency(cost)} and a target margin of ${formatPercent(targetPercent)}, the suggested selling price is ${formatCurrency(sellingPrice)}.`,
+    rows: [
+      { label: "Suggested selling price", value: formatCurrency(sellingPrice) },
+      { label: "Profit per sale", value: formatCurrency(profitPerSale) },
+      { label: "Resulting margin", value: formatPercent(resultingMargin) },
+      {
+        label: "Resulting markup",
+        value: cost === 0 ? "Not defined from zero cost" : formatPercent(resultingMarkup)
+      }
+    ],
+    note:
+      pricingMode === "markup"
+        ? "Markup mode adds the target percentage on top of cost."
+        : "Margin mode solves for the price that keeps the target share of the sale as profit."
+  };
+}
+
+export function calculateContributionMargin(
+  sellingPricePerUnit: number,
+  variableCostPerUnit: number,
+  fixedCosts?: number
+): CalculationResult {
+  if (sellingPricePerUnit <= 0) {
+    throw new Error("Please enter a selling price per unit greater than zero.");
+  }
+
+  const contributionMarginPerUnit = roundMoney(sellingPricePerUnit - variableCostPerUnit);
+  if (contributionMarginPerUnit <= 0) {
+    throw new Error("Each sale must contribute positive margin after variable cost.");
+  }
+
+  const contributionMarginRatio = roundPercent((contributionMarginPerUnit / sellingPricePerUnit) * 100);
+  const normalizedFixedCosts = Number.isFinite(fixedCosts) ? fixedCosts ?? 0 : 0;
+  const hasFixedCosts = Number.isFinite(fixedCosts) && normalizedFixedCosts > 0;
+  const breakEvenUnits = hasFixedCosts ? normalizedFixedCosts / contributionMarginPerUnit : null;
+
+  return {
+    sentence: hasFixedCosts
+      ? `Each sale contributes ${formatCurrency(contributionMarginPerUnit)} toward fixed costs and profit, and break-even is about ${formatNumber(breakEvenUnits ?? 0)} units.`
+      : `Each sale contributes ${formatCurrency(contributionMarginPerUnit)} toward fixed costs and profit, and the contribution margin ratio is ${formatPercent(contributionMarginRatio)}.`,
+    rows: [
+      { label: "Contribution margin per unit", value: formatCurrency(contributionMarginPerUnit) },
+      { label: "Contribution margin ratio", value: formatPercent(contributionMarginRatio) },
+      ...(hasFixedCosts && breakEvenUnits !== null
+        ? [{ label: "Break-even units", value: formatNumber(breakEvenUnits) }]
+        : [])
+    ],
+    note:
+      hasFixedCosts && breakEvenUnits !== null
+        ? "Break-even units are shown because fixed costs were included."
+        : "Contribution margin shows what each sale leaves to cover fixed costs and profit."
+  };
+}
+
+export function calculateCustomerAcquisitionCost(
+  marketingSpend: number,
+  newCustomers: number
+): CalculationResult {
+  if (newCustomers <= 0) {
+    throw new Error("Please enter new customers acquired greater than zero.");
+  }
+
+  const cac = roundMoney(marketingSpend / newCustomers);
+
+  return {
+    sentence: `With ${formatCurrency(marketingSpend)} in spend and ${formatNumber(newCustomers)} new customers acquired, customer acquisition cost is ${formatCurrency(cac)}.`,
+    rows: [
+      { label: "Marketing / sales spend", value: formatCurrency(marketingSpend) },
+      { label: "New customers", value: formatNumber(newCustomers) },
+      { label: "Customer acquisition cost", value: formatCurrency(cac) }
+    ],
+    note: "CAC shows the average cost to acquire one new customer in the period you entered."
+  };
+}
+
+export function calculateLifetimeValue(
+  averageRevenuePerCustomer: number,
+  grossMarginPercent: number,
+  customerLifespanMonths: number
+): CalculationResult {
+  if (grossMarginPercent < 0 || grossMarginPercent > 100) {
+    throw new Error("Gross margin should stay between 0% and 100%.");
+  }
+
+  if (customerLifespanMonths <= 0) {
+    throw new Error("Please enter a customer lifespan greater than zero.");
+  }
+
+  const lifetimeValue = roundMoney(
+    averageRevenuePerCustomer * (grossMarginPercent / 100) * customerLifespanMonths
+  );
+
+  return {
+    sentence: `With average revenue of ${formatCurrency(averageRevenuePerCustomer)}, gross margin of ${formatPercent(grossMarginPercent)}, and lifespan of ${formatNumber(customerLifespanMonths)} months, estimated lifetime value is ${formatCurrency(lifetimeValue)}.`,
+    rows: [
+      { label: "Average revenue per customer", value: formatCurrency(averageRevenuePerCustomer) },
+      { label: "Gross margin", value: formatPercent(grossMarginPercent) },
+      { label: "Customer lifespan", value: `${formatNumber(customerLifespanMonths)} months` },
+      { label: "Estimated lifetime value", value: formatCurrency(lifetimeValue) }
+    ],
+    note: "This is a simple gross-profit-based estimate of customer value over time."
+  };
+}
+
+export function calculateDiscount(originalPrice: number, discountPercent: number): CalculationResult {
+  if (discountPercent < 0 || discountPercent > 100) {
+    throw new Error("Discount percentage should stay between 0% and 100%.");
+  }
+
+  const discountAmount = roundMoney((originalPrice * discountPercent) / 100);
+  const salePrice = roundMoney(originalPrice - discountAmount);
+
+  return {
+    sentence: `From an original price of ${formatCurrency(originalPrice)} and a discount of ${formatPercent(discountPercent)}, the sale price is ${formatCurrency(salePrice)}.`,
+    rows: [
+      { label: "Discount amount", value: formatCurrency(discountAmount) },
+      { label: "Sale price", value: formatCurrency(salePrice) },
+      { label: "Savings percentage", value: formatPercent(discountPercent) }
+    ],
+    note: "Discount amount shows the money removed from the original price before the sale price is set."
   };
 }
