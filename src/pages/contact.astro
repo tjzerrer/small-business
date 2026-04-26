@@ -9,14 +9,14 @@ const webPageSchema = {
   "@type": "ContactPage",
   name: "Contact",
   url: pageUrl,
-  description: "Where to send calculator feedback and suggestions for the Small Business Calculator Toolkit.",
+  description: "Where to send calculator feedback and suggestions for Calc for Business.",
   isPartOf: { "@type": "WebSite", name: site.name, url: site.url }
 };
 ---
 
 <CalculatorLayout
-  title="Contact | Small Business Calculator Toolkit"
-  description="Where to send calculator feedback and suggestions for the Small Business Calculator Toolkit."
+  title="Contact | Calc for Business"
+  description="Where to send calculator feedback and suggestions for Calc for Business."
 >
   <Fragment slot="head">
     <JsonLd data={webPageSchema} />
@@ -37,7 +37,7 @@ const webPageSchema = {
         action={site.contactFormAction}
         method="POST"
       >
-        <input type="hidden" name="_subject" value="Small Business Toolkit contact form" />
+        <input type="hidden" name="_subject" value="Calc for Business contact form" />
         <input type="hidden" name="_next" value={`${site.url}/contact/thanks/`} />
         <input type="hidden" name="_captcha" value="false" />
         <input type="text" name="_honey" class="contact-form__honeypot" tabindex="-1" autocomplete="off" />

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://small-business-toolkit.vercel.app/sitemap-index.xml
+Sitemap: https://calcforbusiness.com/sitemap-index.xml
