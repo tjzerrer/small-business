@@ -65,6 +65,57 @@ a {
   gap: 16px;
 }
 
+.site-footer {
+  max-width: 1240px;
+  margin: 28px auto 0;
+  padding: 20px 22px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  border-radius: 28px;
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.site-footer__copy {
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.site-footer__copy strong {
+  font-size: 1rem;
+}
+
+.site-footer__copy span {
+  color: var(--muted);
+}
+
+.site-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.site-footer__nav a {
+  padding: 10px 14px;
+  border-radius: 999px;
+  transition:
+    background-color 120ms ease,
+    transform 120ms ease,
+    filter 120ms ease;
+}
+
+.site-footer__nav a:hover {
+  background: rgba(15, 118, 110, 0.08);
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -370,6 +421,40 @@ select.input {
   flex-wrap: wrap;
 }
 
+.contact-form {
+  display: grid;
+  gap: 16px;
+}
+
+.contact-form__honeypot {
+  position: absolute;
+  left: -9999px;
+}
+
+.textarea-shell {
+  width: min(100%, 560px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #fff;
+  padding: 12px 14px;
+}
+
+.textarea-shell:focus-within {
+  border-color: rgba(15, 118, 110, 0.5);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.08);
+}
+
+.textarea-input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  resize: vertical;
+  background: transparent;
+  font: inherit;
+  color: var(--ink);
+  min-height: 160px;
+}
+
 .primary-button,
 .secondary-button {
   border: 0;
@@ -566,6 +651,11 @@ select.input {
 @media (max-width: 520px) {
   .site-header {
     border-radius: 28px;
+  }
+
+  .site-footer {
+    padding: 18px;
+    border-radius: 22px;
   }
 
   .hero-card,

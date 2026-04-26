@@ -4,6 +4,7 @@ import { site } from "@/data/site";
 import CalculatorLayout from "@/layouts/CalculatorLayout.astro";
 
 const pageUrl = `${site.url}/contact/`;
+const sent = Astro.url.searchParams.get("sent") === "1";
 const webPageSchema = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
@@ -25,16 +26,72 @@ const webPageSchema = {
     <p class="eyebrow">Contact</p>
     <h1>Questions, suggestions, or calculator requests.</h1>
     <p class="hero-copy">
-      This first version keeps contact simple. Use the project issue tracker to share bugs, calculator requests, or feedback on how the tools could be clearer.
+      Send a message directly from the form below, or use GitHub issues if you are reporting a bug or suggesting a new tool.
     </p>
   </section>
 
-  <section class="detail-card">
-    <h2>Best way to reach out</h2>
-    <p>
-      <a class="text-link" href={site.contactHref} target="_blank" rel="noreferrer">Open the GitHub issues page</a>
-      {" "}to report a bug, suggest a new calculator, or flag a confusing result.
-    </p>
-    <p class="disclaimer">{site.disclaimer}</p>
+  <section class="detail-grid">
+    <article class="detail-card">
+      <h2>Send a message</h2>
+      {sent ? (
+        <p class="disclaimer">Thanks — your message was sent. I will see it at {site.contactEmail}.</p>
+      ) : (
+        <form
+          class="contact-form"
+          action={site.contactFormAction}
+          method="POST"
+        >
+          <input type="hidden" name="_subject" value="Small Business Toolkit contact form" />
+          <input type="hidden" name="_next" value={`${site.url}/contact/?sent=1`} />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="text" name="_honey" class="contact-form__honeypot" tabindex="-1" autocomplete="off" />
+
+          <div class="field-wrap">
+            <label class="field" for="contact-name"><span>Name</span></label>
+            <div class="input-shell input-shell--medium">
+              <input class="input input--medium" id="contact-name" name="name" type="text" required />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field" for="contact-email"><span>Email</span></label>
+            <div class="input-shell input-shell--medium">
+              <input class="input input--medium" id="contact-email" name="email" type="email" required />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field" for="contact-subject"><span>Subject</span></label>
+            <div class="input-shell input-shell--medium">
+              <input class="input input--medium" id="contact-subject" name="subject" type="text" required />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field" for="contact-message"><span>Message</span></label>
+            <div class="textarea-shell">
+              <textarea class="textarea-input" id="contact-message" name="message" rows="7" required></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-button">Send message</button>
+          </div>
+        </form>
+      )}
+    </article>
+
+    <article class="detail-card">
+      <h2>Other ways to reach out</h2>
+      <p>
+        Email:
+        <a class="text-link" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
+      </p>
+      <p>
+        For bugs and tool requests, you can also
+        <a class="text-link" href={site.contactHref} target="_blank" rel="noreferrer"> open the GitHub issues page</a>.
+      </p>
+      <p class="disclaimer">{site.disclaimer}</p>
+    </article>
   </section>
 </CalculatorLayout>

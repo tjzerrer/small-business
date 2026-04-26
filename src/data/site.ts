@@ -7,5 +7,7 @@ export const site = {
   disclaimer:
     "This calculator is for educational and planning purposes only. It does not replace professional financial, tax, or accounting advice.",
   lastUpdated: "April 25, 2026",
-  contactHref: "https://github.com/tjzerrer/small-business/issues"
+  contactHref: "https://github.com/tjzerrer/small-business/issues",
+  contactEmail: "tonyzerrer@gmail.com",
+  contactFormAction: "https://formsubmit.co/tonyzerrer@gmail.com"
 };

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import SiteHeader from "@/components/SiteHeader.astro";
+import SiteFooter from "@/components/SiteFooter.astro";
 
 interface Props {
   title: string;
@@ -18,5 +19,6 @@ const { title, description, pageType = "website" } = Astro.props;
     <main class="page-main">
       <slot />
     </main>
+    <SiteFooter />
   </div>
 </BaseLayout>
